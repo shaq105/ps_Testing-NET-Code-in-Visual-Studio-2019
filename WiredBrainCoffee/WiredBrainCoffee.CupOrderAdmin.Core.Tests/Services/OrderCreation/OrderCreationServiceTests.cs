@@ -75,5 +75,29 @@ namespace WiredBrainCoffee.CupOrderAdmin.Core.Tests.Services.OrderCreation
             Assert.AreEqual(OrderCreationResultCode.StockExceeded, orderCreationResult.ResultCode);
             Assert.AreEqual(_numberOfCupsInStock, orderCreationResult.RemainingCupsInStock);
         }
+
+        [TestMethod]
+        public async Task ShouldThrowExceptionIfNumberOfOrdererdCupsOsLessThanOne()
+        {
+            var numberOfOrderedCups = 0;
+            var customer = new Customer();
+
+            var exception = await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(() =>
+                _orderCreationService.CreateOrderAsync(customer, numberOfOrderedCups));
+
+            Assert.AreEqual("numberOfOrderedCups", exception.ParamName);
+        }
+
+        [TestMethod]
+        public async Task ShouldThrowExceptionIfCiustomerIsNull()
+        {
+            var numberOfOrderedCups = 1;
+            Customer customer = null;
+
+            var exception = await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
+                _orderCreationService.CreateOrderAsync(customer, numberOfOrderedCups));
+
+            Assert.AreEqual("customer", exception.ParamName);
+        }
     }
 }
