@@ -35,13 +35,6 @@ namespace WiredBrainCoffee.CupOrderAdmin.Core.Tests.Services.OrderCreation
         [TestMethod]
         public async Task ShouldStoreCreatedOrderInOrderCreationResult()
         {
-            var orderRepositoryMock = new Mock<IOrderRepository>();
-            orderRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Order>()))
-                .ReturnsAsync((Order x) => x);
-
-            var coffeeCupRepositoryMock = new Mock<ICoffeeCupRepository>();
-
-            var orderCreationService = new OrderCreationService(orderRepositoryMock.Object, coffeeCupRepositoryMock.Object);
             var numberOfOrderedCups = 1;
             var customer = new Customer
             {
@@ -49,7 +42,7 @@ namespace WiredBrainCoffee.CupOrderAdmin.Core.Tests.Services.OrderCreation
             };
 
             var orderCreationResult = 
-            await orderCreationService.CreateOrderAsync(customer, numberOfOrderedCups);
+            await _orderCreationService.CreateOrderAsync(customer, numberOfOrderedCups);
 
             Assert.AreEqual(OrderCreationResultCode.Success, orderCreationResult.ResultCode);
             Assert.IsNotNull(orderCreationResult.CreatedOrder);
@@ -68,6 +61,19 @@ namespace WiredBrainCoffee.CupOrderAdmin.Core.Tests.Services.OrderCreation
 
             Assert.AreEqual(OrderCreationResultCode.Success, orderCreationResult.ResultCode);
             Assert.AreEqual(expectedRemainingCupsInStock, orderCreationResult.RemainingCupsInStock);
+        }
+
+        [TestMethod]
+        public async Task ShouldReturnStockExceededResultIfNotEnoughCupsInStock()
+        {
+            var numberOfOrderedCups = _numberOfCupsInStock + 1;
+            var customer = new Customer();
+
+            var orderCreationResult =
+                await _orderCreationService.CreateOrderAsync(customer, numberOfOrderedCups);
+
+            Assert.AreEqual(OrderCreationResultCode.StockExceeded, orderCreationResult.ResultCode);
+            Assert.AreEqual(_numberOfCupsInStock, orderCreationResult.RemainingCupsInStock);
         }
     }
 }
