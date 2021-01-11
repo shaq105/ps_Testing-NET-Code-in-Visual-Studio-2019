@@ -131,7 +131,7 @@ namespace WiredBrainCoffee.CupOrderAdmin.Core.Tests.Services.OrderCreation
 
         [TestMethod]
 
-        public void ShouyldTrowArgumentNullExceptionIfCoffeeCupRepositoryIsNull()
+        public void ShouldTrowArgumentNullExceptionIfCoffeeCupRepositoryIsNull()
         {
             var exception = Assert.ThrowsException<ArgumentNullException>(() =>
                 new OrderCreationService(new Mock<IOrderRepository>().Object, null));
